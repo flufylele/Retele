@@ -1,0 +1,30 @@
+version: '2.1'
+
+services:
+    tm1:
+        build:
+            context: docker
+            dockerfile: Dockerfile-tema2
+        privileged: true
+        depends_on:
+            - "tm2"
+        volumes:
+            - .:/elocal
+        tty: true
+        networks:
+            - dmz
+        command: bash -c "python3.7 /elocal/src/udp_client.py -p 3002 -s 172.20.0.4 -m 'Hi man!'"
+    tm2:
+        build:
+            context: docker
+            dockerfile: Dockerfile-tema2
+        privileged: true
+        volumes:
+            - .:/elocal
+        tty: true
+        networks:
+            - dmz
+        command: bash -c "(python3.7  /elocal/src/udp_server.py -p 3002 ) && (tcpdump -i any -vvv -nn ip and udp &)"
+
+networks:
+    dmz: {}
